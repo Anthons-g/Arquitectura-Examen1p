@@ -461,18 +461,31 @@ DECLARE
   function_count INTEGER;
   category_count INTEGER;
 BEGIN
+--Agregacion de constantes
+DECLARE
+  schema_name CONSTANT TEXT := 'public';
+  table_names CONSTANT TEXT[] := ARRAY['profiles', 'children', 'daily_logs'];
+
+BEGIN
+  SELECT COUNT(*) INTO table_count
+  FROM information_schema.tables
+  WHERE table_schema = schema_name
+  AND table_name = ANY(table_names);
+END;
+
   -- Contar tablas
   SELECT COUNT(*) INTO table_count
   FROM information_schema.tables 
-  WHERE table_schema = 'public' 
-    AND table_name IN ('profiles', 'children', 'user_child_relations', 'daily_logs', 'categories', 'audit_logs');
+  WHERE table_schema = table_schema 
+        AND table_name = ANY(table_names);
+
   
   result := result || 'Tablas creadas: ' || table_count || '/6' || E'\n';
   
   -- Contar políticas
   SELECT COUNT(*) INTO policy_count
   FROM pg_policies 
-  WHERE schemaname = 'public';
+  WHERE schemaname = schema_name;
   
   result := result || 'Políticas RLS: ' || policy_count || E'\n';
   
@@ -492,7 +505,7 @@ BEGIN
   -- Verificar RLS
   IF (SELECT COUNT(*) FROM pg_class c 
       JOIN pg_namespace n ON n.oid = c.relnamespace 
-      WHERE n.nspname = 'public' 
+      WHERE n.nspname = schema_name 
         AND c.relname = 'children' 
         AND c.relrowsecurity = true) > 0 THEN
     result := result || 'RLS: ✅ Habilitado' || E'\n';
