@@ -220,8 +220,8 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_user_meta_data->>'role', (SELECT role FROM roles WHERE role = 'parent'))
-  );
+    COALESCE(NEW.raw_user_meta_data->>'role', default_role)
+ );
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -323,8 +323,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE VIEW user_accessible_children AS
 SELECT 
   c.*,
-  (SELECT type FROM relationship_types WHERE type = 'parent') as relationship_type,
-  true as can_edit,
+  'parent'::TEXT as relationship_type, 
+true as can_edit,
   true as can_view,
   true as can_export,
   true as can_invite_others,
