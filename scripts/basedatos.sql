@@ -45,14 +45,13 @@ DROP TABLE IF EXISTS profiles CASCADE;
 -- ================================================================
 -- 2. CREAR TABLAS PRINCIPALES
 -- ================================================================
+
 -- TABLA: profiles (usuarios del sistema)
---Agreglo , definir un tipo de ENUM
-CREATE TYPE user_roleenum AS ENUM ('parent', 'teacher', 'specialist', 'admin');
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   full_name TEXT NOT NULL,
-  role user_roleenum DEFAULT 'parent',--Agreglo
+  role TEXT REFERENCES roles(role) DEFAULT 'parent',
   avatar_url TEXT,
   phone TEXT,
   is_active BOOLEAN DEFAULT TRUE,
@@ -103,13 +102,11 @@ CREATE TABLE children (
 );
 
 -- TABLA: user_child_relations (relaciones usuario-niño)
---tipo de ENUM
-CREATE TYPE relationship_typeenum AS ENUM ('parent', 'teacher', 'specialist', 'observer', 'family');
 CREATE TABLE user_child_relations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
   child_id UUID REFERENCES children(id) ON DELETE CASCADE NOT NULL,
-  relationship_type relationship_typeenum NOT NULL,--Areglo
+  relationship_type TEXT REFERENCES relationship_types(type) NOT NULL,
   can_edit BOOLEAN DEFAULT FALSE,
   can_view BOOLEAN DEFAULT TRUE,
   can_export BOOLEAN DEFAULT FALSE,
@@ -126,9 +123,6 @@ CREATE TABLE user_child_relations (
 );
 
 -- TABLA: daily_logs (registros diarios)
---tipo de ENUM
-CREATE TYPE intensity_levelenum AS ENUM ('low', 'medium', 'high');
-
 CREATE TABLE daily_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   child_id UUID REFERENCES children(id) ON DELETE CASCADE NOT NULL,
@@ -136,7 +130,7 @@ CREATE TABLE daily_logs (
   title TEXT NOT NULL CHECK (length(trim(title)) >= 2),
   content TEXT NOT NULL,
   mood_score INTEGER CHECK (mood_score >= 1 AND mood_score <= 10),
-  intensity_level intensity_enum  DEFAULT 'medium',
+  intensity_level TEXT CHECK (intensity_level IN ('low', 'medium', 'high')) DEFAULT 'medium',
   logged_by UUID REFERENCES profiles(id) NOT NULL,
   log_date DATE DEFAULT CURRENT_DATE,
   is_private BOOLEAN DEFAULT FALSE,
@@ -170,7 +164,7 @@ CREATE TABLE audit_logs (
   ip_address INET,
   user_agent TEXT,
   session_id TEXT,
-  risk_level risk_level DEFAULT 'low',
+  risk_level TEXT CHECK (risk_level IN ('low', 'medium', 'high', 'critical')) DEFAULT 'low',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -226,7 +220,7 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_user_meta_data->>'role', 'parent')
+    COALESCE(NEW.raw_user_meta_data->>'role', (SELECT role FROM roles WHERE role = 'parent'))
   );
   RETURN NEW;
 END;
@@ -329,7 +323,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE VIEW user_accessible_children AS
 SELECT 
   c.*,
-  'parent'::TEXT as relationship_type,
+  (SELECT type FROM relationship_types WHERE type = 'parent') as relationship_type
   true as can_edit,
   true as can_view,
   true as can_export,
