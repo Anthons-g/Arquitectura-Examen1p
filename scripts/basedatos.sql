@@ -51,7 +51,7 @@ CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   full_name TEXT NOT NULL,
-  role TEXT CHECK (role IN ('parent', 'teacher', 'specialist', 'admin')) DEFAULT 'parent',
+  role TEXT REFERENCES roles(role) DEFAULT 'parent',
   avatar_url TEXT,
   phone TEXT,
   is_active BOOLEAN DEFAULT TRUE,
@@ -106,7 +106,7 @@ CREATE TABLE user_child_relations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
   child_id UUID REFERENCES children(id) ON DELETE CASCADE NOT NULL,
-  relationship_type TEXT CHECK (relationship_type IN ('parent', 'teacher', 'specialist', 'observer', 'family')) NOT NULL,
+  relationship_type TEXT REFERENCES relationship_types(type) NOT NULL,
   can_edit BOOLEAN DEFAULT FALSE,
   can_view BOOLEAN DEFAULT TRUE,
   can_export BOOLEAN DEFAULT FALSE,
@@ -220,7 +220,7 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_user_meta_data->>'role', 'parent')
+    COALESCE(NEW.raw_user_meta_data->>'role', (SELECT role FROM roles WHERE role = 'parent'))
   );
   RETURN NEW;
 END;
@@ -323,7 +323,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE VIEW user_accessible_children AS
 SELECT 
   c.*,
-  'parent'::TEXT as relationship_type,
+  (SELECT type FROM relationship_types WHERE type = 'parent') as relationship_type
   true as can_edit,
   true as can_view,
   true as can_export,
