@@ -323,7 +323,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE VIEW user_accessible_children AS
 SELECT 
   c.*,
-  (SELECT type FROM relationship_types WHERE type = 'parent') as relationship_type
+  (SELECT type FROM relationship_types WHERE type = 'parent') as relationship_type,
   true as can_edit,
   true as can_view,
   true as can_export,
