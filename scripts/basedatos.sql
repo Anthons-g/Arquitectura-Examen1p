@@ -254,24 +254,30 @@ CREATE TRIGGER on_auth_user_created
 -- Función para verificar acceso a niño
 CREATE OR REPLACE FUNCTION user_can_access_child(child_uuid UUID)
 RETURNS BOOLEAN AS $$
+DECLARE
+  count_matches INT;
 BEGIN
-  RETURN EXISTS (
-    SELECT 1 FROM children 
-    WHERE id = child_uuid 
-      AND created_by = auth.uid()
-  );
+  SELECT COUNT(*) INTO count_matches
+  FROM children
+  WHERE id = child_uuid
+    AND created_by = auth.uid();
+
+  RETURN count_matches > 0;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Función para verificar permisos de edición
 CREATE OR REPLACE FUNCTION user_can_edit_child(child_uuid UUID)
 RETURNS BOOLEAN AS $$
+DECLARE
+  count_matches INT;
 BEGIN
-  RETURN EXISTS (
-    SELECT 1 FROM children 
-    WHERE id = child_uuid 
-      AND created_by = auth.uid()
-  );
+  SELECT COUNT(*) INTO count_matches
+  FROM children
+  WHERE id = child_uuid
+    AND created_by = auth.uid();
+
+  RETURN count_matches > 0;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
