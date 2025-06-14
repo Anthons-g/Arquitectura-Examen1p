@@ -55,7 +55,7 @@ export default function ChildDetailPage() {
   const router = useRouter();
   const childId = params.id as string;
   const {loading: childLoading, getChildById } = useChildren();
-  const { logs, loading: logsLoading, stats } = useLogs({ childId });
+  const { logs,stats } = useLogs({ childId });
   
   const [child, setChild] = useState<ChildWithRelation | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
