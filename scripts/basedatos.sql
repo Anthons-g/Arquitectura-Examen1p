@@ -310,11 +310,13 @@ BEGIN
     ),
     'medium'
   );
+
 EXCEPTION
   WHEN OTHERS THEN
-    NULL; -- No fallar por errores de auditoría
+    RAISE WARNING 'Error de auditoría ignorado en audit_sensitive_access: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
 
 -- ================================================================
 -- 7. CREAR VISTAS
