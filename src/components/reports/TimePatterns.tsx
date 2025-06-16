@@ -11,16 +11,17 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, Calendar, TrendingUp, TrendingDown, Minus, Brain, Target, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface TimePatternsProps {
-  logs: any[];
+  readonly logs: readonly any[];
 }
 
 interface CorrelationAnalysisProps {
-  logs: any[];
+  readonly logs: readonly any[];
 }
 
 interface AdvancedInsightsProps {
-  logs: any[];
+  readonly logs: readonly any[];
 }
+
 
 // ================================================================
 // TIMEPATTERNS COMPONENT
@@ -144,17 +145,14 @@ export function CorrelationAnalysis({ logs }: CorrelationAnalysisProps) {
   const moodIntensityCorr = calculateCorrelation(
     logs.filter(l => l.mood_score && l.intensity_level),
     'mood_score',
-    log => log.intensity_level === 'low' ? 1 : log.intensity_level === 'medium' ? 2 : 3
+    log => log.intensity_level === 'low' ? 1 :
   );
 
   // Calcular correlación entre categorías y estado de ánimo
   const categoryMoodCorr = logs.reduce((acc, log) => {
     if (!log.mood_score || !log.category_name) return acc;
     
-    if (!acc[log.category_name]) {
-      acc[log.category_name] = { total: 0, count: 0 };
-    }
-    
+    acc[log.category_name] ??= { total: 0, count: 0 };   
     acc[log.category_name].total += log.mood_score;
     acc[log.category_name].count += 1;
     
@@ -306,7 +304,7 @@ export function AdvancedInsights({ logs }: AdvancedInsightsProps) {
 
     const categories = Object.entries(categoryCount);
     if (categories.length > 0) {
-      const mostUsedCategory = categories.sort(([,a], [,b]) => b - a)[0];
+      const mostUsedCategory = [0];
       
       insights.push({
         type: 'info',

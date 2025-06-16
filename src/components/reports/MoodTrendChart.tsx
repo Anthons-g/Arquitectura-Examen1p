@@ -51,7 +51,7 @@ export function MoodTrendChart({ data }: MoodTrendChartProps) {
           <XAxis dataKey="week" />
           <YAxis domain={[1, 5]} />
           <Tooltip 
-            formatter={(value, name) => [
+            formatter={(value) => [
               `${value}/5`,
               'Estado de ánimo promedio'
             ]}
