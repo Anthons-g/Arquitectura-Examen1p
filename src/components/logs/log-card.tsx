@@ -26,9 +26,8 @@ interface LogWithDetails {
 }
 
 interface LogCardProps {
-  log: LogWithDetails
+  readonly log: LogWithDetails;
 }
-
 export function LogCard({ log }: LogCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false)
 

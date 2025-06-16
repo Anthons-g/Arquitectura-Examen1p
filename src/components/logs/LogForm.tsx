@@ -102,27 +102,26 @@ type LogFormData = z.infer<typeof logFormSchema>;
 // ================================================================
 
 interface LogFormProps {
-  log?: DailyLog;
-  childId?: string;
-  mode: 'create' | 'edit';
-  onSuccess?: (log: DailyLog) => void;
-  onCancel?: () => void;
+  readonly log?: DailyLog;
+  readonly childId?: string;
+  readonly mode: 'create' | 'edit';
+  readonly onSuccess?: (log: DailyLog) => void;
+  readonly onCancel?: () => void;
 }
 
 interface MoodSelectorProps {
-  value?: number;
-  onChange: (value: number | undefined) => void;
+  readonly value: number;
+  readonly onChange: (value: number) => void;
 }
-
 interface AttachmentsManagerProps {
-  attachments: LogAttachment[];
-  onChange: (attachments: LogAttachment[]) => void;
-  childId: string;
+  readonly attachments: LogAttachment[];
+  readonly onChange: (attachments: LogAttachment[]) => void;
+  readonly childId: string;
 }
 
 interface TagsInputProps {
-  tags: string[];
-  onChange: (tags: string[]) => void;
+  readonly tags: readonly string[];
+  readonly onChange: (tags: readonly string[]) => void;
 }
 
 // ================================================================
@@ -163,7 +162,7 @@ function MoodSelector({ value, onChange }: MoodSelectorProps) {
           </button>
         ))}
       </div>
-      {value && (
+      {Boolean(value) && (
         <div className="text-center">
           <Button
             type="button"
@@ -362,7 +361,7 @@ function TagsInput({ tags, onChange }: TagsInputProps) {
           placeholder="Agregar etiqueta..."
           value={newTag}
           onChange={(e) => setNewTag(e.target.value)}
-          onKeyPress={(e) => {
+          onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
               addTag();

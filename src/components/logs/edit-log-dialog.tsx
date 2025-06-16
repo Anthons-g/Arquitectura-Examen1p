@@ -32,11 +32,10 @@ interface LogData {
 }
 
 interface EditLogDialogProps {
-  log: LogData
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  readonly log: LogData;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
 }
-
 interface FormData {
   title: string
   content: string
