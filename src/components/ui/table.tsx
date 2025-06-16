@@ -10,11 +10,23 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       data-slot="table-container"
       className="relative w-full overflow-x-auto"
     >
-      <table
-        data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
-        {...props}
-      />
+    <table
+  data-slot="table"
+  className={cn("w-full caption-bottom text-sm", className)}
+  {...props}
+>
+  <thead>
+    <tr>
+      <th>Columna 1</th>
+      <th>Columna 2</th>
+      <th>Columna 3</th>
+      {/* agrega los encabezados que correspondan */}
+    </tr>
+  </thead>
+  <tbody>
+    {/* Aquí van las filas con <tr> y celdas <td> */}
+  </tbody>
+</table>
     </div>
   )
 }
