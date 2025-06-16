@@ -13,7 +13,6 @@ import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useToast } from '@/components/ui/use-toast'
 import { 
-  Settings, 
   User, 
   Bell, 
   Shield, 
@@ -91,7 +90,7 @@ export default function SettingsPage() {
       console.error('Error updating profile:', error)
       toast({
         title: "Error al actualizar",
-        description: error.message || "No se pudieron guardar los cambios.",
+        description: error.message ?? "No se pudieron guardar los cambios.",
         variant: "destructive"
       })
     } finally {
@@ -171,6 +170,7 @@ export default function SettingsPage() {
         </p>
       </div>
 
+
       {/* ✅ INFORMACIÓN DEL USUARIO ACTUAL */}
       <Card className="bg-blue-50 border-blue-200">
         <CardContent className="pt-6">
@@ -186,10 +186,10 @@ export default function SettingsPage() {
               </p>
               <p className="text-sm text-gray-600">{user.email}</p>
               <p className="text-xs text-blue-600 capitalize">
-                {user.role === 'parent' ? 'Padre/Madre' :
-                 user.role === 'teacher' ? 'Docente' :
-                 user.role === 'specialist' ? 'Especialista' : 
-                 user.role === 'admin' ? 'Administrador' : 'Usuario'}
+                {user.full_name || 'Usuario'}
+
+
+                
               </p>
             </div>
           </div>
