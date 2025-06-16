@@ -9,6 +9,11 @@ export type Json =
   | null
   | { [key: string]: Json | undefined }
   | Json[]
+type RiskLevel = 'low' | 'medium' | 'high' | 'critical';
+type rala = 'INSERT' | 'UPDATE' | 'DELETE' | 'SELECT'
+type tgt ='low' | 'medium' | 'high'
+type jl = 'parent' | 'teacher' | 'specialist' | 'admin'
+type ml = 'parent' | 'teacher' | 'specialist' | 'observer' | 'family'
 
 export interface Database {
   public: {
@@ -17,7 +22,7 @@ export interface Database {
         Row: {
           id: string
           table_name: string
-          operation: 'INSERT' | 'UPDATE' | 'DELETE' | 'SELECT'
+          operation: rala
           record_id: string | null
           user_id: string | null
           user_role: string | null
@@ -27,7 +32,7 @@ export interface Database {
           ip_address: string | null
           user_agent: string | null
           session_id: string | null
-          risk_level: 'low' | 'medium' | 'high' | 'critical'
+          risk_level: RiskLevel;
           created_at: string
         }
         Insert: {
@@ -43,7 +48,7 @@ export interface Database {
           ip_address?: string | null
           user_agent?: string | null
           session_id?: string | null
-          risk_level?: 'low' | 'medium' | 'high' | 'critical'
+          risk_level?:RiskLevel; 
           created_at?: string
         }
         Update: {
@@ -59,7 +64,7 @@ export interface Database {
           ip_address?: string | null
           user_agent?: string | null
           session_id?: string | null
-          risk_level?: 'low' | 'medium' | 'high' | 'critical'
+          risk_level?: RiskLevel;
           created_at?: string
         }
         Relationships: [
@@ -172,7 +177,7 @@ export interface Database {
           }
         ]
       }
-      daily_logs: {
+     daily_logs: {
         Row: {
           id: string
           child_id: string
@@ -180,7 +185,7 @@ export interface Database {
           title: string
           content: string
           mood_score: number | null
-          intensity_level: 'low' | 'medium' | 'high'
+          intensity_level: tgt
           logged_by: string
           log_date: string
           is_private: boolean
@@ -283,7 +288,7 @@ export interface Database {
           id: string
           email: string
           full_name: string
-          role: 'parent' | 'teacher' | 'specialist' | 'admin'
+          role: jl
           avatar_url: string | null
           phone: string | null
           is_active: boolean
@@ -344,7 +349,7 @@ export interface Database {
           id: string
           user_id: string
           child_id: string
-          relationship_type: 'parent' | 'teacher' | 'specialist' | 'observer' | 'family'
+          relationship_type: ml
           can_edit: boolean
           can_view: boolean
           can_export: boolean
